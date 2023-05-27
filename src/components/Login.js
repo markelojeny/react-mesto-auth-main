@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import * as auth from '../utils/auth.js';
+import AuthForm from "./AuthForm.js";
 
 const Login = (props) => {
     const navigate = useNavigate();
@@ -23,25 +23,17 @@ const Login = (props) => {
         if (!formValue.email || !formValue.password){
             return;
         }
-        auth.authorize(formValue.email, formValue.password)
-        .then((data) => {
-            const jwt = localStorage.setItem('jwt', data.token);
-            console.log(data.token);
-            props.handleLogin();
-            setFormValue({ email: '', password: '' });
-            navigate('/', {replace: true});
-        })
-        .catch(err => console.log(err));
+        props.onLogin(formValue.email, formValue.password);
     }
 
     return (
         <div className="login">
             <p className="login__welcome">Вход</p>
-            <form autoComplete="off" onSubmit={handleSubmit} className="login__form">
-                <input autoComplete="off" className="login__input" required id="email" name="email" type="text" value={formValue.email || ""} placeholder="Email" onChange={handleChange} />
-                <input autoComplete="off" className="login__input" required id="password" name="password" type="password" value={formValue.password || ""} placeholder="Пароль" onChange={handleChange} />
-                <button onSubmit={handleSubmit} type="submit" className="login__button">Войти</button>
-            </form>
+            <AuthForm onSubmit={handleSubmit} 
+            onChange={handleChange} 
+            email={formValue.email || ""} 
+            password={formValue.password || ""} 
+            text="Войти" />
         </div>
     )
 }

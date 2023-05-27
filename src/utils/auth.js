@@ -17,7 +17,7 @@ export const register = (email, password) => {
   })
   .then((res) => {
     return handleResponse(res)
-  })
+  });
 };
 
 export const authorize = (email, password) => {
@@ -36,8 +36,7 @@ export const authorize = (email, password) => {
       localStorage.setItem('jwt', data.jwt);
       return data;
     }
-  })
-  .catch((err) => console.log(err));
+  });
 };
 
 export const checkToken = (token) => {
@@ -51,6 +50,5 @@ export const checkToken = (token) => {
   .then((res) => {
     return handleResponse(res)
   })
-  .then(data => data)
-  .catch((err) => console.log(err));
+  .then(data => data);
 }

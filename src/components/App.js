@@ -14,7 +14,9 @@ import InfoTooltip from './InfoTooltip.js';
 import CurrentUserContext from "../context/CurrentUserContext.js";
 import ProtectedRoute from "./ProtectedRoute.js";
 import api from "../utils/api.js";
-import * as auth from "../utils/auth.js"
+import * as auth from "../utils/auth.js";
+import registerOk from '../images/ok.svg'
+import registerNotOk from '../images/not_ok.svg'
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -24,7 +26,6 @@ function App() {
   const [isGoodRegister, setIsGoodRegister] = React.useState(false);
   const [popupText, setPopupText] = React.useState("");
   const [popupImage, setPopupImage] = React.useState("");
-  const [] = React.useState();
 
   const [selectedCard, setSelectedCard] = React.useState({ });
   const [currentUser, setCurrentUser] = React.useState({});
@@ -37,6 +38,33 @@ function App() {
 
   function handleLogin () {
     setLoggedIn(true);
+  }
+
+  function onRegister (email, password) {
+    auth.register(email, password)
+    .then(() => {
+      console.log(email)
+      console.log(password)
+      setPopupImage(registerOk);
+      setPopupText("Вы успешно зарегистрировались!");
+      navigate('/signin', {replace: true});
+    })
+    .catch(() => {
+      setPopupImage(registerNotOk);
+      setPopupText("Что-то пошло не так! Попробуйте ещё раз.");
+    })
+    .finally(handleGoodClick);
+  }
+
+  function onLogin (email, password) {
+    auth.authorize(email, password)
+        .then((data) => {
+            localStorage.setItem('jwt', data.token);
+            console.log(data.token);
+            handleLogin();
+            navigate('/', {replace: true});
+        })
+        .catch(err => console.log(err));
   }
 
   React.useEffect(() => {
@@ -183,13 +211,13 @@ function App() {
         <Route path='/signin' element={
           <>
             <Header link="/signup" text="Регистрация" />
-            <Login handleLogin={handleLogin} />
+            <Login onLogin={onLogin} />
           </>
         } />
         <Route path='/signup' element={
           <>
             <Header link="/signin" text="Войти" />
-            <Register goodClick={handleGoodClick} setPopupText={setPopupText} setPopupImage={setPopupImage} />
+            <Register onRegister={onRegister} />
         </>
         }/>
         <Route path="*" element={loggedIn ? <Navigate to="/" replace /> : <Navigate to="/signin" replace />} />
